@@ -1,22 +1,19 @@
 import { useState } from "react";
 import { Box, Button, Text, useToast } from "@chakra-ui/react";
-import { executeCode } from "../api";
+// import { executeCode } from "../api";
 
-const Output = ({ editorRef, language }) => {
+const Output = ({ editorRef, language, compilerOutput, executeCode }) => {
   const toast = useToast();
-  const [output, setOutput] = useState(null);
+  // const [output, setOutput] = useState(compilerOutput);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const runCode = async () => {
+  const runCode = () => {
     const sourceCode = editorRef.current.getValue();
     if (!sourceCode) return;
     try {
       setIsLoading(true);
-      const { run: result } = await executeCode(language, sourceCode);
-      console.log(result);
-      setOutput(result.output.split("\n"));
-      result.stderr ? setIsError(true) : setIsError(false);
+      executeCode(language, sourceCode);
     } catch (error) {
       console.log(error);
       toast({
@@ -52,8 +49,8 @@ const Output = ({ editorRef, language }) => {
         borderRadius={4}
         borderColor={isError ? "red.500" : "#333"}
       >
-        {output
-          ? output.map((line, i) => <Text key={i}>{line}</Text>)
+        {compilerOutput
+          ? compilerOutput.map((line, i) => <Text key={i}>{line}</Text>)
           : 'Click "Run Code" to see the output here'}
       </Box>
     </Box>
