@@ -24,7 +24,9 @@ const CodeEditor = () => {
     <Box>
       <HStack spacing={4}>
         <Box w="50%">
-          <LanguageSelector language={language} onSelect={onSelect} />
+          <HStack spacing={4}>
+            <LanguageSelector language={language} onSelect={onSelect} />
+          </HStack>
           <Editor
             options={{
               minimap: {
