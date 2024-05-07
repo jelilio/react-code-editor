@@ -1,9 +1,12 @@
 import axios from "axios";
 import { LANGUAGE_VERSIONS } from "./constants";
 
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+export const COMPILER_CHANNEL = import.meta.env.VITE_COMPILER_CHANNEL;
+export const WS_URL = import.meta.env.VITE_WS_URL;
+
 const API = axios.create({
-  // baseURL: "https://emkc.org/api/v2/piston",
-  baseURL: "http://127.0.0.1:8000",
+  baseURL: API_BASE_URL,
 });
 
 export const executeCode = async (language, sourceCode) => {

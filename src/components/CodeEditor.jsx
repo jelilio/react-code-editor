@@ -5,7 +5,9 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import LanguageSelector from "./LanguageSelector";
 import { CODE_SNIPPETS, LANGUAGE_VERSIONS } from "../constants";
 import Output from "./Output";
-import { executeCode } from "../api";
+import { executeCode, WS_URL, COMPILER_CHANNEL } from "../api";
+
+const WS_CHANNEL_URL =  `${WS_URL}/${COMPILER_CHANNEL}`
 
 const CodeEditor = () => {
   const editorRef = useRef();
@@ -14,9 +16,8 @@ const CodeEditor = () => {
   const [language, setLanguage] = useState("python");
   const [output, setOutput] = useState(null);
 
-  const WS_URL = "ws://127.0.0.1:8080/ws"
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
-    WS_URL,
+    WS_CHANNEL_URL,
     {
       share: false,
       shouldReconnect: () => true,
