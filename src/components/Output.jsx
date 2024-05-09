@@ -1,11 +1,8 @@
 import { useState } from "react";
 import { Box, Button, Text, useToast } from "@chakra-ui/react";
 
-const Output = ({ editorRef, language, compilerOutput, executeCode, isLoading, setIsLoading}) => {
+const Output = ({ editorRef, language, compilerOutput, executeCode, isLoading, isError}) => {
   const toast = useToast();
-  // const [output, setOutput] = useState(compilerOutput);
-  // const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
 
   const runCode = () => {
     const sourceCode = editorRef.current.getValue();
@@ -43,7 +40,8 @@ const Output = ({ editorRef, language, compilerOutput, executeCode, isLoading, s
       <Box
         height="75vh"
         p={2}
-        color={isError ? "red.400" : ""}
+        bg="#181818"
+        color={isError ? "red.400" : "#cbcbcb"}
         border="1px solid"
         borderRadius={4}
         borderColor={isError ? "red.500" : "#333"}

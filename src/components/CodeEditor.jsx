@@ -16,6 +16,7 @@ const CodeEditor = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState("python");
   const [output, setOutput] = useState(null);
+  const [isError, setIsError] = useState(false);
 
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
     WS_CHANNEL_URL,
@@ -66,8 +67,18 @@ const CodeEditor = () => {
   // Run when a new WebSocket message is received (lastJsonMessage)
   useEffect(() => {
     setIsLoading(false);
-    console.log(lastJsonMessage?.languageOutput[language])
-    setOutput(lastJsonMessage?.languageOutput[language])
+    // const {languageOutput} = lastJsonMessage;
+    if(!lastJsonMessage) return;
+
+    const {languageOutput} = lastJsonMessage;
+    if(!languageOutput) return;
+
+    const res = languageOutput[language];
+    if(res) {
+      const {isError, outputs} = res;
+      setIsError(isError);
+      setOutput(outputs);
+    }
   }, [lastJsonMessage])
 
   const executeCode = (language, sourceCode) => {
@@ -83,6 +94,7 @@ const CodeEditor = () => {
 
     if(websocketState) {
       setIsLoading(true);
+      setIsError(false);
       setOutput([]);
       sendJsonMessage(message)
     }
@@ -112,7 +124,7 @@ const CodeEditor = () => {
           language={language}
           executeCode={executeCode}
           isLoading={isLoading}
-          setIsLoading={setIsLoading}
+          isError={isError}
         />
       </HStack>
     </Box>
