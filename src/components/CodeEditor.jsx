@@ -13,6 +13,7 @@ const CodeEditor = () => {
   const editorRef = useRef();
   const [value, setValue] = useState("");
   const [websocketState, setWebsocketState] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState("python");
   const [output, setOutput] = useState(null);
 
@@ -34,6 +35,28 @@ const CodeEditor = () => {
     setValue(CODE_SNIPPETS[language]);
   };
 
+  const options = {
+    autoIndent: 'full',
+    contextmenu: true,
+    fontFamily: 'monospace',
+    fontSize: 14,
+    lineHeight: 24,
+    hideCursorInOverviewRuler: true,
+    matchBrackets: 'always',
+    minimap: {
+      enabled: true,
+    },
+    scrollbar: {
+      horizontalSliderSize: 4,
+      verticalSliderSize: 18,
+    },
+    selectOnLineNumbers: true,
+    roundedSelection: false,
+    readOnly: false,
+    cursorStyle: 'line',
+    automaticLayout: true,
+  };
+
   // Run when the connection state (readyState) changes
   useEffect(() => {
     console.log("Connection state changed")
@@ -42,13 +65,12 @@ const CodeEditor = () => {
 
   // Run when a new WebSocket message is received (lastJsonMessage)
   useEffect(() => {
-    console.log(`Got a new message: ${lastJsonMessage}`)
-    console.log(lastJsonMessage)
+    setIsLoading(false);
+    console.log(lastJsonMessage?.languageOutput[language])
     setOutput(lastJsonMessage?.languageOutput[language])
   }, [lastJsonMessage])
 
   const executeCode = (language, sourceCode) => {
-    console.log("Executing code", language, sourceCode);
     const message = {
       language: language,
       version: LANGUAGE_VERSIONS[language],
@@ -58,27 +80,23 @@ const CodeEditor = () => {
         },
       ],
     };
-    console.log(message)
+
     if(websocketState) {
-      console.log("Websocket: message sent")
+      setIsLoading(true);
+      setOutput([]);
       sendJsonMessage(message)
     }
-
   };
 
   return (
     <Box>
       <HStack spacing={4}>
-        <Box w="50%">
+        <Box w="60%">
           <HStack spacing={4}>
             <LanguageSelector language={language} onSelect={onSelect} />
           </HStack>
           <Editor
-            options={{
-              minimap: {
-                enabled: false,
-              },
-            }}
+            options={options}
             height="75vh"
             theme="vs-dark"
             language={language}
@@ -88,7 +106,14 @@ const CodeEditor = () => {
             onChange={(value) => setValue(value)}
           />
         </Box>
-        <Output editorRef={editorRef} compilerOutput={output} language={language} executeCode={executeCode} />
+        <Output
+          editorRef={editorRef}
+          compilerOutput={output}
+          language={language}
+          executeCode={executeCode}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+        />
       </HStack>
     </Box>
   );
