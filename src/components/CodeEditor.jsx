@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Box, HStack } from "@chakra-ui/react";
 import { Editor } from "@monaco-editor/react";
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket, { ReadyState } from "react-use-websocket";
 import LanguageSelector from "./LanguageSelector";
 import { CODE_SNIPPETS, LANGUAGE_VERSIONS } from "../constants";
 import Output from "./Output";
-import { executeCode, WS_URL, COMPILER_CHANNEL } from "../api";
+import { WS_URL, COMPILER_CHANNEL } from "../api";
 
-const WS_CHANNEL_URL =  `${WS_URL}/${COMPILER_CHANNEL}`
+const WS_CHANNEL_URL = `${WS_URL}/${COMPILER_CHANNEL}`;
 
 const CodeEditor = () => {
   const editorRef = useRef();
   const [value, setValue] = useState("");
-  const [websocketState, setWebsocketState] = useState(false)
+  const [websocketState, setWebsocketState] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState("python");
   const [output, setOutput] = useState(null);
@@ -23,8 +23,8 @@ const CodeEditor = () => {
     {
       share: false,
       shouldReconnect: () => true,
-    },
-  )
+    }
+  );
 
   const onMount = (editor) => {
     editorRef.current = editor;
@@ -37,13 +37,13 @@ const CodeEditor = () => {
   };
 
   const options = {
-    autoIndent: 'full',
+    autoIndent: "full",
     contextmenu: true,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     fontSize: 14,
     lineHeight: 24,
     hideCursorInOverviewRuler: true,
-    matchBrackets: 'always',
+    matchBrackets: "always",
     minimap: {
       enabled: true,
     },
@@ -54,32 +54,32 @@ const CodeEditor = () => {
     selectOnLineNumbers: true,
     roundedSelection: false,
     readOnly: false,
-    cursorStyle: 'line',
+    cursorStyle: "line",
     automaticLayout: true,
   };
 
   // Run when the connection state (readyState) changes
   useEffect(() => {
-    console.log("Connection state changed")
-    setWebsocketState(readyState === ReadyState.OPEN)
-  }, [readyState])
+    console.log("Connection state changed");
+    setWebsocketState(readyState === ReadyState.OPEN);
+  }, [readyState]);
 
   // Run when a new WebSocket message is received (lastJsonMessage)
   useEffect(() => {
     setIsLoading(false);
     // const {languageOutput} = lastJsonMessage;
-    if(!lastJsonMessage) return;
+    if (!lastJsonMessage) return;
 
-    const {languageOutput} = lastJsonMessage;
-    if(!languageOutput) return;
+    const { languageOutput } = lastJsonMessage;
+    if (!languageOutput) return;
 
     const res = languageOutput[language];
-    if(res) {
-      const {isError, outputs} = res;
+    if (res) {
+      const { isError, outputs } = res;
       setIsError(isError);
       setOutput(outputs);
     }
-  }, [lastJsonMessage])
+  }, [lastJsonMessage]);
 
   const executeCode = (language, sourceCode) => {
     const message = {
@@ -92,11 +92,11 @@ const CodeEditor = () => {
       ],
     };
 
-    if(websocketState) {
+    if (websocketState) {
       setIsLoading(true);
       setIsError(false);
       setOutput([]);
-      sendJsonMessage(message)
+      sendJsonMessage(message);
     }
   };
 
